@@ -1,0 +1,27 @@
+{
+  "name": "ijo-daemon",
+  "version": "0.0.1",
+  "description": "The daemon for the IJO server manager.",
+  "main": "./src/index.js",
+  "scripts": {
+    "start": "node ./src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ijo-sm/ijo-daemon.git"
+  },
+  "keywords": [
+    "daemon",
+    "ijo",
+    "server-management"
+  ],
+  "author": "ijo-sm",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ijo-sm/ijo-daemon/issues"
+  },
+  "homepage": "https://github.com/ijo-sm/ijo-daemon#readme",
+  "dependencies": {
+    "ijo-utils": "github:ijo-sm/ijo-utils"
+  }
+}
