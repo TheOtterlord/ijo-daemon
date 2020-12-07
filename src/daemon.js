@@ -5,7 +5,8 @@ const PanelHandler = require("./net/panelHandler");
 class Daemon {
     constructor() {
         this.config = new ConfigFile(path.join(this.root, "./config.json"), {defaults: {
-			api: {host: "localhost", port: 8080}
+            name: "test",
+			panel: {host: "localhost", port: 8081}
 		}});
         this.panelHandler = new PanelHandler();
     }
@@ -16,7 +17,8 @@ class Daemon {
 
     async initialize() {
         await this.config.load().catch(e => {throw e});
-        this.panelHandler.initialize(this.config.get("api"));
+        this.name = this.config.get("name");
+        this.panelHandler.initialize(this.config.get("panel"), this.name);
     }
 
     async start() {
@@ -24,7 +26,8 @@ class Daemon {
     }
 
     async stop() {
-
+        await this.panelHandler.close().catch(e => {throw e});
+		await this.config.save().catch(e => {throw e});
     }
 }
 
