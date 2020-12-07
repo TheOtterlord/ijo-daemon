@@ -1,11 +1,27 @@
 const net = require("net");
-const {nanoid} = require("nanoid");
 
 class PanelHandler {
-    initialize(config, daemonName) {
+    constructor() {
+        this.stack = [];
+    }
+
+    register(event, callback) {
+        this.stack.push({
+            event, callback
+        });
+    }
+
+    unregister(event) {
+        const handlerIndex = this.stack.findIndex(handler => handler.event === event);
+
+        if(handlerIndex < 0) return;
+
+        this.stack.splice(handlerIndex);
+    }
+
+    initialize({config, daemonName}) {
         this.config = config;
         this.daemonName = daemonName;
-        this.authenticated = false;
     }
 
     connect() {
@@ -14,7 +30,6 @@ class PanelHandler {
                 host: this.config.host,
                 port: this.config.port
             }, () => resolve());
-            this.client.on("connect", () => this.handleConnect());
             this.client.on("data", chunk => this.handleData(chunk));
             this.client.on("error", err => reject(err));
             this.client.on("close", hadError => this.handleClose(hadError));
@@ -37,29 +52,7 @@ class PanelHandler {
         this.handle(data);
     }
 
-    handleConnect() {
-        if(this.config.key) this.handleKnownConnect();
-        else this.handleUnknownConnect();
-    }
-
-    handleKnownConnect() {
-        this.send({
-            event: "identify",
-            name: this.daemonName,
-            key: this.config.key
-        });
-    }
-
-    handleUnknownConnect() {
-        this.config.code = nanoid(8);
-        this.send({
-            event: "identify",
-            name: this.daemonName,
-            code: this.config.code
-        });
-    }
-
-    handleClose(hadError) {
+    handleClose() {
         if(this.client.destroyed) return;
         if(this.connectionRetries <= this.config.maxConnectionRetries) {
             throw Error("Max connection retries reached.");
@@ -72,7 +65,19 @@ class PanelHandler {
     }
 
     async handle(data) {
+        const event = data.event;
 
+        if(event === error) return this.handleError(data);
+
+        for(const handler of this.stack) {
+            if(handler.event !== event) continue;
+
+            const canContinue = await handler.callback(data, this);
+
+            if(!canContinue) return;
+        }
+
+        this.send({event: "error", reason: "eventNotFound"});
     }
 
     send(data = {}) {
