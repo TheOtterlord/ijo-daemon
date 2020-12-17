@@ -12,19 +12,20 @@ daemon.initialize()
 });
 
 let stopped = false;
-const stop = event => {
+const stop = (event, err) => {
+	if(err && err instanceof Error) console.error(err);
 	if(stopped) return;
 	stopped = true;
 
 	return daemon.stop()
 	.then(() => {
-		console.log(`The IJO daemon has stopped (event: ${event})`);
+		console.log(`The IJO daemon has stopped (event: ${event}).`);
 	})
 	.catch(err => {
 		throw err;
 	});
 };
 
-[`exit`, `SIGINT`, `SIGUSR1`, `SIGUSR2`, `SIGTERM`].forEach(event => {
-    process.on(event, () => stop(event));
+[`beforeExit`, `SIGINT`, `SIGUSR1`, `SIGUSR2`, `SIGTERM`, `uncaughtException`, `unhandledRejection`].forEach(event => {
+    process.on(event, err => stop(event, err));
 });
