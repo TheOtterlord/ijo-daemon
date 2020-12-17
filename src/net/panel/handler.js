@@ -32,7 +32,7 @@ class PanelHandler {
             }, () => resolve());
             this.client.on("data", chunk => this.handleData(chunk));
             this.client.on("error", err => reject(err));
-            this.client.on("close", hadError => this.handleClose(hadError));
+            this.client.on("close", () => this.handleClose());
         });
     }
 
@@ -67,8 +67,6 @@ class PanelHandler {
     async handle(data) {
         const event = data.event;
 
-        if(event === error) return this.handleError(data);
-
         for(const handler of this.stack) {
             if(handler.event !== event) continue;
 
@@ -86,7 +84,8 @@ class PanelHandler {
 
     close() {
         return new Promise(resolve => {
-            this.client.end(() => resolve());
+            if(this.client.destroyed) resolve();
+            else this.client.end(() => resolve());
         });
     }
 }

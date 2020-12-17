@@ -1,9 +1,9 @@
 class AuthEvents {
     constructor(panelHandler, authHandler) {
-        panelHandler.registerEvent("auth/key", (...args) => this.key(authHandler, ...args));
-        panelHandler.registerEvent("auth/correct", () => this.correct(authHandler));
-        panelHandler.registerEvent("auth/nameInUse", () => this.nameInUse());
-        panelHandler.registerEvent("auth/incorrect", () => this.incorrect());
+        panelHandler.register("auth/key", (...args) => this.key(authHandler, ...args));
+        panelHandler.register("auth/correct", () => this.correct(authHandler));
+        panelHandler.register("auth/nameInUse", () => this.nameInUse());
+        panelHandler.register("auth/incorrect", () => this.incorrect());
     }
 
     key(authHandler, data) {
@@ -19,7 +19,7 @@ class AuthEvents {
     }
 
     incorrect() {
-        throw Error("The key has been deemed incorrect by the panel.");
+        throw Error("The identity has been deemed incorrect by the panel.");
     }
 }
 

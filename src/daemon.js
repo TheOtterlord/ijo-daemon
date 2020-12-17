@@ -27,9 +27,9 @@ class Daemon {
 
     async start() {
         await this.panelHandler.connect().catch(e => {throw e});
-        await this.authHandler.authenticateToPanel({
+        this.authHandler.authenticate({
             panelHandler: this.panelHandler, name: this.name
-        }).catch(e => {throw e});
+        });
     }
 
     async stop() {

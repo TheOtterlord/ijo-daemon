@@ -12,24 +12,24 @@ class AuthHandler {
     }
 
     authenticate({panelHandler, name}) {
-        if(config.key) this.authKnown({panelHandler, name});
+        if(this.config.key) this.authKnown({panelHandler, name});
         else this.authUnknown({panelHandler, name});
     }
 
-    authUnknown({panelHandler, name, config}) {
-        config.code = nanoid(8);
+    authUnknown({panelHandler, name}) {
+        this.config.code = nanoid(8);
         panelHandler.send({
             event: "auth/identify",
             name,
-            code: config.code
+            code: this.config.code
         });
     }
 
-    authKnown({panelHandler, name, config}) {
+    authKnown({panelHandler, name}) {
         panelHandler.send({
             event: "auth/identify",
             name,
-            key: config.key
+            key: this.config.key
         });
     }
 
