@@ -21,6 +21,7 @@ class Daemon {
     async initialize() {
         await this.config.load().catch(e => {throw e});
         this.name = this.config.get("name");
+        this.version = process.env.npm_package_version;
         this.panelHandler.initialize({config: this.config.get("panel"), name: this.name});
         this.authHandler.initialize({panelHandler: this.panelHandler, config: this.config.get("auth")});
     }
@@ -28,7 +29,7 @@ class Daemon {
     async start() {
         await this.panelHandler.connect().catch(e => {throw e});
         this.authHandler.authenticate({
-            panelHandler: this.panelHandler, name: this.name
+            panelHandler: this.panelHandler, name: this.name, version: this.version
         });
     }
 

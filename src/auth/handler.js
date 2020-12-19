@@ -6,29 +6,29 @@ class AuthHandler {
         this.isAuthenticated = false;
     }
 
-    initialize({panelHandler, config}) {
+    initialize({panelHandler, config} = {}) {
         this.config = config;
         this.events = new AuthEvents(panelHandler, this);
     }
 
-    authenticate({panelHandler, name}) {
-        if(this.config.key) this.authKnown({panelHandler, name});
-        else this.authUnknown({panelHandler, name});
+    authenticate({panelHandler, name, version} = {}) {
+        if(this.config.key) this.authKnown({panelHandler, name, version});
+        else this.authUnknown({panelHandler, name, version});
     }
 
-    authUnknown({panelHandler, name}) {
+    authUnknown({panelHandler, name, version} = {}) {
         this.config.code = nanoid(8);
         panelHandler.send({
             event: "auth/identify",
-            name,
+            name, version,
             code: this.config.code
         });
     }
 
-    authKnown({panelHandler, name}) {
+    authKnown({panelHandler, name, version} = {}) {
         panelHandler.send({
             event: "auth/identify",
-            name,
+            name, version,
             key: this.config.key
         });
     }
