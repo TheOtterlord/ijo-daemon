@@ -9,14 +9,14 @@ class Daemon {
             name: "test",
             panel: {host: "localhost", port: 8081},
             auth: {}
-		}});
+        }});
         this.panelHandler = new PanelHandler();
         this.authHandler = new AuthHandler();
     }
 
     get root() {
-		return path.join(path.dirname(require.main.filename), "../");
-	}
+        return path.join(path.dirname(require.main.filename), "../");
+    }
 
     async initialize() {
         await this.config.load().catch(e => {throw e});
@@ -35,7 +35,7 @@ class Daemon {
 
     async stop() {
         await this.panelHandler.close().catch(e => {throw e});
-		await this.config.save().catch(e => {throw e});
+        await this.config.save().catch(e => {throw e});
     }
 }
 

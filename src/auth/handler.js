@@ -12,7 +12,7 @@ class AuthHandler {
     }
 
     authenticate({panelHandler, name, version} = {}) {
-        if(this.config.key) this.authKnown({panelHandler, name, version});
+        if (this.config.key) this.authKnown({panelHandler, name, version});
         else this.authUnknown({panelHandler, name, version});
     }
 
@@ -35,7 +35,7 @@ class AuthHandler {
 
     authenticated(key) {
         this.isAuthenticated = true;
-        if(key) this.config.key = key;
+        if (key) this.config.key = key;
     }
 }
 

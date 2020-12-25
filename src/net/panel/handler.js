@@ -14,7 +14,7 @@ class PanelHandler {
     unregister(event) {
         const handlerIndex = this.stack.findIndex(handler => handler.event === event);
 
-        if(handlerIndex < 0) return;
+        if (handlerIndex < 0) return;
 
         this.stack.splice(handlerIndex);
     }
@@ -53,8 +53,8 @@ class PanelHandler {
     }
 
     handleClose() {
-        if(this.client.destroyed) return;
-        if(this.connectionRetries <= this.config.maxConnectionRetries) {
+        if (this.client.destroyed) return;
+        if (this.connectionRetries <= this.config.maxConnectionRetries) {
             throw Error("Max connection retries reached.");
         }
 
@@ -67,12 +67,12 @@ class PanelHandler {
     async handle(data) {
         const event = data.event;
 
-        for(const handler of this.stack) {
-            if(handler.event !== event) continue;
+        for (const handler of this.stack) {
+            if (handler.event !== event) continue;
 
             const canContinue = await handler.callback(data, this);
 
-            if(!canContinue) return;
+            if (!canContinue) return;
         }
 
         this.send({event: "error", reason: "eventNotFound"});
@@ -84,7 +84,7 @@ class PanelHandler {
 
     close() {
         return new Promise(resolve => {
-            if(this.client.destroyed) resolve();
+            if (this.client.destroyed) resolve();
             else this.client.end(() => resolve());
         });
     }
