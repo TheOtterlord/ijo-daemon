@@ -5,6 +5,7 @@
   "main": "./src/index.js",
   "scripts": {
     "start": "node ./src/index.js",
+    "docs": "./node_modules/.bin/jsdoc -c jsdoc.json",
     "lint": "./node_modules/.bin/eslint ./src",
     "lint-fix": "./node_modules/.bin/eslint ./src --fix"
   },
@@ -28,6 +29,8 @@
     "nanoid": "^3.1.20"
   },
   "devDependencies": {
-    "eslint": "^7.16.0"
+    "docdash": "^1.2.0",
+    "eslint": "^7.16.0",
+    "jsdoc": "^3.6.6"
   }
 }
