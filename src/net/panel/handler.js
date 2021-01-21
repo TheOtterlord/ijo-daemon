@@ -22,6 +22,7 @@ class PanelHandler {
         this.stack.push({
             event, callback
         });
+        this.log?.debug(`Registered callback for event: '${event}'`);
     }
 
     /**
@@ -35,6 +36,7 @@ class PanelHandler {
         if (handlerIndex < 0) return;
 
         this.stack.splice(handlerIndex);
+        this.log?.debug(`Unregistered callback for event: '${event}'`);
     }
 
     /**
@@ -42,9 +44,10 @@ class PanelHandler {
      * @summary Should only be called by ijo-daemon.
      * @param {Object} params The parameters received on initialization. 
      */
-    initialize({config, daemonName}) {
+    initialize({config, daemonName, log}) {
         this.config = config;
         this.daemonName = daemonName;
+        this.log = log;
     }
 
     /**
@@ -111,11 +114,13 @@ class PanelHandler {
     async handle(data) {
         const event = data.event;
 
-        if(event === undefined) {
+        if (event === undefined) {
             this.send({event: "error/noEvent"});
 
             return;
         }
+
+        this.log?.trace(`Received event '${event}' from panel`);
 
         for (const handler of this.stack) {
             if (handler.event !== event) continue;

@@ -4,9 +4,6 @@ daemon.initialize()
 .then(() => {
     return daemon.start();
 })
-.then(() => {
-    console.log("The IJO daemon has started.");
-})
 .catch(err => {
     throw err;
 });
@@ -17,11 +14,7 @@ const stop = (event, err) => {
     if (stopped) return;
     stopped = true;
 
-    return daemon.stop()
-    .then(() => {
-        console.log(`The IJO daemon has stopped (event: ${event}).`);
-    })
-    .catch(err => {
+    return daemon.stop(event).catch(err => {
         throw err;
     });
 };

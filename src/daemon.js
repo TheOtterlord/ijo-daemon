@@ -1,5 +1,5 @@
 const path = require("path");
-const {ConfigFile} = require("ijo-utils");
+const {ConfigFile, Logger} = require("ijo-utils");
 const PanelHandler = require("./net/panel/handler");
 const AuthHandler = require("./auth/handler");
 
@@ -8,6 +8,7 @@ const AuthHandler = require("./auth/handler");
  */
 class Daemon {
     constructor() {
+        this.log = new Logger();
         /**
          * The configuration file containing the options for the daemon.
          * @type {ConfigFile}
@@ -41,10 +42,11 @@ class Daemon {
      * @returns {Promise} A promise that resolves when the daemon has been initialized.
      */
     async initialize() {
+        this.log.initialize({folder: path.join(this.root, "./logs"), name: "daemon", logLevel: 2});
         await this.config.load().catch(e => {throw e});
         this.name = this.config.get("name");
         this.version = process.env.npm_package_version;
-        this.panelHandler.initialize({config: this.config.get("panel"), name: this.name});
+        this.panelHandler.initialize({config: this.config.get("panel"), name: this.name, log: this.log});
         this.authHandler.initialize({panelHandler: this.panelHandler, config: this.config.get("auth")});
     }
 
@@ -57,15 +59,17 @@ class Daemon {
         this.authHandler.authenticate({
             panelHandler: this.panelHandler, name: this.name, version: this.version
         });
+        this.log.info("The IJO daemon has started.", "daemon");
     }
 
     /**
      * Stops the daemon.
      * @returns {Promise} A promise that resolves when the daemon has stopped.
      */
-    async stop() {
+    async stop(event) {
         await this.panelHandler.close().catch(e => {throw e});
         await this.config.save().catch(e => {throw e});
+        this.log.info(`The IJO daemon has stopped (event: ${event}).`);
     }
 }
 
